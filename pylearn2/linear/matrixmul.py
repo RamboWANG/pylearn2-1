@@ -89,8 +89,8 @@ class MatrixMul(LinearTransform):
             assert ValueError("project needs 1- or 2-dimensional input")
 
 
-def make_local_rfs(dataset, nhid, rf_shape, stride, irange = .05,
-        draw_patches = False, rng = None):
+def make_local_rfs(dataset, nhid, rf_shape, stride, irange=.05,
+                   draw_patches=False, rng=None):
     """
     Initializes a weight matrix with local receptive fields
 
@@ -117,13 +117,12 @@ def make_local_rfs(dataset, nhid, rf_shape, stride, irange = .05,
     """
     s = dataset.view_shape()
     height, width, channels = s
-    W_img = np.zeros( (nhid, height, width, channels) )
+    W_img = np.zeros((nhid, height, width, channels))
 
     last_row = s[0] - rf_shape[0]
     last_col = s[1] - rf_shape[1]
 
-    rng = make_np_rng(rng, [2012,07,18], which_method='uniform')
-
+    rng = make_np_rng(rng, [2012, 07, 18], which_method='uniform')
 
     if stride is not None:
         # local_rf_stride specified, make local_rfs on a grid
@@ -131,13 +130,14 @@ def make_local_rfs(dataset, nhid, rf_shape, stride, irange = .05,
         num_row_steps = last_row / stride[0] + 1
 
         assert last_col % stride[1] == 0
-        num_col_steps = last_col /stride[1] + 1
+        num_col_steps = last_col / stride[1] + 1
 
         total_rfs = num_row_steps * num_col_steps
 
         if nhid % total_rfs != 0:
             raise ValueError('nhid modulo total_rfs should be 0, but we get '
-                    '%d modulo %d = %d' % (nhid, total_rfs, nhid % total_rfs))
+                             '%d modulo %d = %d' % (nhid, total_rfs,
+                                                    nhid % total_rfs))
 
         filters_per_rf = nhid / total_rfs
 
@@ -151,18 +151,17 @@ def make_local_rfs(dataset, nhid, rf_shape, stride, irange = .05,
 
                     if draw_patches:
                         img = dataset.get_batch_topo(1)[0]
-                        local_rf = img[rc:rc+rf_shape[0],
-                                       cc:cc+rf_shape[1],
+                        local_rf = img[rc:rc + rf_shape[0],
+                                       cc:cc + rf_shape[1],
                                        :]
                     else:
                         local_rf = rng.uniform(-irange,
-                                    irange,
-                                    (rf_shape[0], rf_shape[1], s[2]) )
+                                               irange,
+                                               (rf_shape[0],
+                                                rf_shape[1], s[2]))
 
-
-
-                    W_img[idx,rc:rc+rf_shape[0],
-                      cc:cc+rf_shape[1],:] = local_rf
+                    W_img[idx, rc:rc + rf_shape[0],
+                          cc:cc + rf_shape[1], :] = local_rf
                     idx += 1
         assert idx == nhid
     else:
@@ -196,9 +195,8 @@ def make_local_rfs(dataset, nhid, rf_shape, stride, irange = .05,
                       cc:cc+shape[1],:] = local_rf
         """
 
-
     W = dataset.view_converter.topo_view_to_design_mat(W_img).T
 
-    rval = MatrixMul(W = sharedX(W))
+    rval = MatrixMul(W=sharedX(W))
 
     return rval
