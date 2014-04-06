@@ -18,7 +18,6 @@ Presets:
 """
 from __future__ import division
 import numpy
-import pdb
 np = numpy
 
 from pylearn2.space import CompositeSpace
@@ -504,7 +503,6 @@ class FiniteDatasetIterator(object):
                 # to lambda, in order to capture their current value,
                 # otherwise they would change in the next iteration
                 # of the loop.
-                pdb.set_trace()
                 if fn is None:
                     fn = (lambda batch, dspace=dspace, sp=sp:
                           dspace.np_format_as(batch, sp))
