@@ -163,6 +163,8 @@ class DenseDesignMatrix(Dataset):
         self.X = X
         self.y = y
         self.max_labels = max_labels
+        self.X_labels = X_labels
+        self.y_labels = y_labels
 
         if max_labels is not None:
             warnings.warn("The max_labels argument for DenseDesignMatrix is "
@@ -759,7 +761,7 @@ class DenseDesignMatrix(Dataset):
 
         # Update data specs
         X_source = 'features'
-        if x_labels is None:
+        if self.X_labels is None:
             X_space = VectorSpace(dim=self.X.shape[1])
         else:
             X_space = IndexSpace(dim=self.X.shape[1], max_labels=self.X_labels)
@@ -767,7 +769,7 @@ class DenseDesignMatrix(Dataset):
             space = X_space
             source = X_source
         else:
-            if  self.y_labels is not None:
+            if self.y_labels is not None:
                 if self.y.ndim != 2:
                     dim = 1
                 else:
