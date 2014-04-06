@@ -171,8 +171,13 @@ class DenseDesignMatrix(Dataset):
                           "being deprecated. Please use y_labels to set the "
                           "number of target labels instead")
 
+        if X_labels is not None:
+            assert X.ndim <= 2
+            assert np.all(X < X_labels)
+
         if y_labels is not None:
             assert y is not None
+            assert y.ndim <= 2
             assert np.all(y < y_labels)
 
         if topo_view is not None:
@@ -200,23 +205,23 @@ class DenseDesignMatrix(Dataset):
 
             # Update data specs
             X_source = 'features'
-            if self.X_labels is None:
-                X_space = VectorSpace(dim=self.X.shape[1])
+            if X_labels is None:
+                X_space = VectorSpace(dim=X.shape[1])
             else:
-                X_space = IndexSpace(dim=self.X.shape[1], max_labels=self.X_labels)
-            if self.y is None:
+                X_space = IndexSpace(dim=X.shape[1], max_labels=X_labels)
+            if y is None:
                 space = X_space
                 source = X_source
             else:
-                if self.y_labels is not None:
-                    if self.y.ndim != 2:
+                if y_labels is not None:
+                    if y.ndim == 1:
                         dim = 1
                     else:
-                        dim = self.y.shape[1]
-                    y_space = IndexSpace(dim=dim, max_labels=self.y_labels)
+                        dim = y.shape[1]
+                    y_space = IndexSpace(dim=dim, max_labels=y_labels)
                     y_source = 'targets'
                 else:
-                    y_space = VectorSpace(dim=self.y.shape[-1])
+                    y_space = VectorSpace(dim=y.shape[-1])
                     y_source = 'targets'
                 space = CompositeSpace((X_space, y_space))
                 source = (X_source, y_source)
