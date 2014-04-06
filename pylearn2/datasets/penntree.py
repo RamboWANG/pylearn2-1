@@ -4,9 +4,7 @@ __license__ = "3-clause BSD"
 
 import numpy
 from numpy.lib.stride_tricks import as_strided
-from pylearn2.datasets.dense_design_matrix import (DenseDesignMatrix,
-    IndexSpaceViewConverter)
-from pylearn2.space import IndexSpace
+from pylearn2.datasets.dense_design_matrix import DenseDesignMatrix
 from pylearn2.utils import serial
 from pylearn2.utils.iteration import resolve_iterator_class
 
@@ -49,9 +47,7 @@ class PennTreebank(DenseDesignMatrix):
         super(PennTreebank, self).__init__(
             X=self._data[:, :-1],
             y=self._data[:, -1],
-            max_labels=10000,
-            view_converter=IndexSpaceViewConverter(dim=ngram_size - 1,
-                                                   max_labels=10000)
+            X_labels=10000, y_labels=10000
         )
 
         if shuffle:

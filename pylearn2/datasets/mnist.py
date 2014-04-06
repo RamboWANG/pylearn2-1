@@ -114,7 +114,8 @@ class MNIST(dense_design_matrix.DenseDesignMatrix):
                 topo_view -= topo_view.mean(axis=0)
 
             if shuffle:
-                self.shuffle_rng = make_np_rng(None, [1, 2, 3], which_method="shuffle")
+                self.shuffle_rng = make_np_rng(None, [1, 2, 3],
+                                               which_method="shuffle")
                 for i in xrange(topo_view.shape[0]):
                     j = self.shuffle_rng.randint(m)
                     # Copy ensures that memory is not aliased.
@@ -127,7 +128,7 @@ class MNIST(dense_design_matrix.DenseDesignMatrix):
                     y[j] = tmp
 
             super(MNIST, self).__init__(topo_view=dimshuffle(topo_view), y=y,
-                                        axes=axes, max_labels=max_labels)
+                                        axes=axes, y_labels=max_labels)
 
             assert not N.any(N.isnan(self.X))
 
@@ -211,6 +212,8 @@ class MNIST_rotated_background(dense_design_matrix.DenseDesignMatrix):
 
         view_converter = dense_design_matrix.DefaultViewConverter((28, 28, 1))
 
-        super(MNIST_rotated_background, self).__init__(X=X, y=y, view_converter=view_converter)
+        super(MNIST_rotated_background, self).__init__(
+            X=X, y=y, view_converter=view_converter
+        )
 
         assert not N.any(N.isnan(self.X))

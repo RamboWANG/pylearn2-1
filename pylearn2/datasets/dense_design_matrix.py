@@ -159,14 +159,19 @@ class DenseDesignMatrix(Dataset):
     def __init__(self, X=None, topo_view=None, y=None,
                  view_converter=None, axes=('b', 0, 1, 'c'),
                  rng=_default_seed, preprocessor=None, fit_preprocessor=False,
-                 max_labels=None):
+                 max_labels=None, X_labels=None, y_labels=None):
         self.X = X
         self.y = y
         self.max_labels = max_labels
 
         if max_labels is not None:
+            warnings.warn("The max_labels argument for DenseDesignMatrix is "
+                          "being deprecated. Please use y_labels to set the "
+                          "number of target labels instead")
+
+        if y_labels is not None:
             assert y is not None
-            assert np.all(y < max_labels)
+            assert np.all(y < y_labels)
 
         if topo_view is not None:
             assert view_converter is None
@@ -753,15 +758,21 @@ class DenseDesignMatrix(Dataset):
         assert not np.any(np.isnan(self.X))
 
         # Update data specs
-        X_space = VectorSpace(dim=self.X.shape[1])
         X_source = 'features'
+        if x_labels is None:
+            X_space = VectorSpace(dim=self.X.shape[1])
+        else:
+            X_space = IndexSpace(dim=self.X.shape[1], max_labels=self.X_labels)
         if self.y is None:
             space = X_space
             source = X_source
         else:
-            if self.y.ndim != 2:
-                assert self.max_labels
-                y_space = IndexSpace(max_labels=self.max_labels, dim=1)
+            if  self.y_labels is not None:
+                if self.y.ndim != 2:
+                    dim = 1
+                else:
+                    dim = self.y.shape[1]
+                y_space = IndexSpace(dim=dim, max_labels=self.y_labels)
                 y_source = 'targets'
             else:
                 y_space = VectorSpace(dim=self.y.shape[-1])
