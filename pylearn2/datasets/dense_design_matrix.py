@@ -1249,21 +1249,6 @@ class DenseDesignMatrixPyTables(DenseDesignMatrix):
         return h5file, gcolumns
 
 
-class IndexSpaceViewConverter(object):
-    def __init__(self, dim, max_labels):
-        self.topo_space = IndexSpace(dim=dim, max_labels=max_labels)
-
-    def get_formatted_batch(self, batch, dspace):
-        """
-        .. todo::
-
-            WRITEME properly
-
-        Reformat batch from the internal storage format into dspace.
-        """
-        return batch
-
-
 class DefaultViewConverter(object):
     """
     .. todo::
