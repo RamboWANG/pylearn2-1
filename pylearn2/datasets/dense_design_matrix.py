@@ -198,24 +198,32 @@ class DenseDesignMatrix(Dataset):
             else:
                 self.X_topo_space = None
 
-            # Update data specs, if not done in set_topological_view
-            X_space = VectorSpace(dim=self.X.shape[1])
+            # Update data specs
             X_source = 'features'
-            if y is None:
+            if self.X_labels is None:
+                X_space = VectorSpace(dim=self.X.shape[1])
+            else:
+                X_space = IndexSpace(dim=self.X.shape[1], max_labels=self.X_labels)
+            if self.y is None:
                 space = X_space
                 source = X_source
             else:
-                if self.y.ndim == 1:
-                    dim = 1
+                if self.y_labels is not None:
+                    if self.y.ndim != 2:
+                        dim = 1
+                    else:
+                        dim = self.y.shape[1]
+                    y_space = IndexSpace(dim=dim, max_labels=self.y_labels)
+                    y_source = 'targets'
                 else:
-                    dim = self.y.shape[-1]
-                y_space = VectorSpace(dim=dim)
-                y_source = 'targets'
-
+                    y_space = VectorSpace(dim=self.y.shape[-1])
+                    y_source = 'targets'
                 space = CompositeSpace((X_space, y_space))
                 source = (X_source, y_source)
+
             self.data_specs = (space, source)
             self.X_space = X_space
+            self._iter_data_specs = (X_space, X_source)
 
         self.compress = False
         self.design_loc = None
